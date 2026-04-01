@@ -1,21 +1,36 @@
-FROM python:buster 
+# Use Python 3.11 slim image as base
+FROM python:3.11-slim
 
-RUN curl -k https://public.dhe.ibm.com/software/ibmi/products/odbc/debs/dists/1.1.0/ibmi-acs-1.1.0.list >> /etc/apt/sources.list
+# Set working directory
+WORKDIR /app
 
-RUN apt-get update
-RUN apt-get upgrade -y
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
 
-RUN apt-get install -y ibm-iaccess
-RUN apt-get install -y build-essential poppler-utils texlive-latex-base texlive-latex-extra libopenblas-dev \
-                       sudo unzip wget nano poppler-utils cmake git libssl-dev zlib1g-dev libncurses5-dev libgdbm-dev \
-                       libnss3-dev libssl-dev libreadline-dev libffi-dev curl unixodbc-dev
-RUN pip install --upgrade pip
-RUN python --version
-RUN pip install qiskit[visualization]
-RUN pip install pyodbc
-RUN mkdir jupyter-notebooks
-COPY 3sat.ipynb jupyter-notebooks/3sat.ipynb
-COPY dbsetup.ipynb jupyter-notebooks/dbsetup.ipynb
-COPY odbc.ini /etc/odbc.ini
+# Install system dependencies (if needed)
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
 
-CMD [ "jupyter" , "notebook",  "--allow-root", "--ip=0.0.0.0", "--port=8889", "--notebook-dir=jupyter-notebooks", "--no-browser" ]
+# Copy requirements file
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY grover_3sat_solver.py .
+
+# Create non-root user for security
+RUN useradd -m -u 1000 quantum && \
+    chown -R quantum:quantum /app
+
+# Switch to non-root user
+USER quantum
+
+# Set entrypoint
+ENTRYPOINT ["python", "grover_3sat_solver.py"]

@@ -1,0 +1,5 @@
+qiskit>=1.0.0
+qiskit-aer>=0.13.0
+mapepire-python>=0.1.0
+python-dotenv>=1.0.0
+numpy>=1.24.0
