@@ -2,17 +2,16 @@ SET SCHEMA JESSEG;
 
 -- Create the function if it doesn't exist
 CREATE OR REPLACE FUNCTION JESSEG.THREESAT()
-RETURNS TABLE (
-    CNF_FORMULA VARCHAR(32000)
-)
-LANGUAGE SQL
-BEGIN
-    -- Example: Return a sample 3SAT instance
-    RETURN SELECT 'p cnf 3 3
-1 2 -3 0
--1 2 3 0
-1 -2 3 0' AS CNF_FORMULA
-    FROM SYSIBM.SYSDUMMY1;
-END;
+  RETURNS TABLE (c1 INT, c2 INT, c3 INT, c4 INT)
+  LANGUAGE SQL
+  SPECIFIC JESSEG.THREESAT
+  NOT DETERMINISTIC
+  NO EXTERNAL ACTION
+  RETURN
+    VALUES (-1, -2, -3, 0),
+           ( 1, -2,  3, 0),
+           ( 1,  2, -3, 0),
+           ( 1, -2, -3, 0),
+           (-1,  2,  3, 0);
 
-SELECT * FROM TABLE(JESSEG.THREESAT()) AS t
+SELECT * FROM TABLE(JESSEG.THREESAT()) AS t;
