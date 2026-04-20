@@ -24,7 +24,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy Jupyter notebooks and supporting files
 COPY *.ipynb .
-COPY Db2.sql .
 
 # Create non-root user for security
 RUN useradd -m -u 1000 quantum && \

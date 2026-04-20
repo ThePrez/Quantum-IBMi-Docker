@@ -6,9 +6,10 @@ This directory contains Jupyter notebooks for solving 3SAT problems using Grover
 
 1. **`dbsetup.ipynb`** - Database setup and connection testing
    - Tests Mapepire connection to IBM i
-   - Creates database schema and tables
-   - Inserts sample 3SAT data
-   - Verifies THREESAT function
+   - Sets current schema to JESSEG
+   - Creates JESSEG schema
+   - Creates THREESAT() function with embedded sample data
+   - Verifies THREESAT function returns correct data
 
 2. **`3sat.ipynb`** - Quantum 3SAT solver
    - Connects to IBM i and fetches 3SAT instances
@@ -56,7 +57,7 @@ jupyter lab
 ## Files
 
 - `3sat.ipynb` - Main quantum solver notebook
-- `dbsetup.ipynb` - Database setup notebook
+- `dbsetup.ipynb` - Database setup notebook (includes all database setup logic)
 - `Dockerfile` - Container configuration for Jupyter Lab
 - `requirements.txt` - Python dependencies
-- `Db2.sql` - SQL scripts for database setup
+- `jupyter_server_config.py` - Jupyter server configuration
