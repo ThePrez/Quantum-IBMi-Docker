@@ -15,7 +15,6 @@ Quantum-IBMi-Docker/
 │   ├── 3sat.ipynb                    # Main quantum 3SAT solver notebook
 │   ├── dbsetup.ipynb                 # Database setup and connection testing notebook
 │   ├── jupyter_server_config.py      # Jupyter server configuration
-│   ├── Db2.sql                       # IBM i database setup SQL script
 │   ├── requirements.txt              # Python dependencies
 │   ├── odbc.ini                      # ODBC configuration (optional)
 │   ├── .dockerignore                 # Docker ignore patterns
@@ -82,10 +81,10 @@ Access Jupyter Lab at `http://127.0.0.1:8888/lab` (no token required - configure
 
 1. **Database Setup** ([`dbsetup.ipynb`](3sat-emulator/dbsetup.ipynb)):
    - Connect to IBM i via Mapepire
-   - Create the `DIMACS` schema
-   - Create the `SAT3_1` table
-   - Insert sample 3SAT problem data
-   - Verify database connectivity
+   - Set current schema to `JESSEG`
+   - Create the `JESSEG` schema
+   - Create the `THREESAT()` function with embedded sample data
+   - Verify the function returns correct data
 
 2. **Quantum 3SAT Solver** ([`3sat.ipynb`](3sat-emulator/3sat.ipynb)):
    - Connect to IBM i database
@@ -119,12 +118,15 @@ The 3SAT solver uses Grover's quantum search algorithm to find satisfying assign
 
 ### Database Schema
 
-The IBM i database uses the `THREESAT()` function that returns 3SAT clauses:
+The IBM i database uses the `THREESAT()` function that returns 3SAT clauses. This function is created automatically by running [`dbsetup.ipynb`](3sat-emulator/dbsetup.ipynb):
 
 ```sql
 CREATE OR REPLACE FUNCTION JESSEG.THREESAT()
   RETURNS TABLE (c1 INT, c2 INT, c3 INT, c4 INT)
   LANGUAGE SQL
+  SPECIFIC JESSEG.THREESAT
+  NOT DETERMINISTIC
+  NO EXTERNAL ACTION
   RETURN
     VALUES (-1, -2, -3, 0),
            ( 1, -2,  3, 0),
@@ -135,14 +137,9 @@ CREATE OR REPLACE FUNCTION JESSEG.THREESAT()
 
 **Format**: Each row represents a clause with three literals (c1, c2, c3). Negative values represent negated variables. The fourth column (c4) is reserved for future use.
 
-**Alternative Schema**: The notebooks also support the `DIMACS.SAT3_1` table format:
-
+**Usage**: Query the function using:
 ```sql
-CREATE TABLE DIMACS.SAT3_1 (
-    A INTEGER,
-    B INTEGER,
-    C INTEGER
-)
+SELECT * FROM TABLE(JESSEG.THREESAT()) AS t
 ```
 
 ## Use Cases
