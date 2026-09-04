@@ -11,8 +11,8 @@ This repository provides a containerized Jupyter Lab environment for quantum com
 ```
 Quantum-IBMi-Docker/
 ├── 3sat-emulator/
-│   ├── 3sat.ipynb                 # Quantum 3SAT solver — local Aer simulator
-│   ├── 3sat-ibm.ipynb             # Quantum 3SAT solver — IBM Quantum Cloud
+│   ├── 3sat.ipynb                 # Quantum 3SAT solver - local Aer simulator
+│   ├── 3sat-ibm.ipynb             # Quantum 3SAT solver - IBM Quantum Cloud
 │   ├── dbsetup.ipynb              # IBM i database setup (run once)
 │   ├── Dockerfile                 # Container image definition
 │   ├── requirements.txt           # Python dependencies
@@ -32,7 +32,7 @@ docker build -t quantum-3sat-jupyter .
 docker run -p 8888:8888 quantum-3sat-jupyter
 ```
 
-Open Jupyter Lab at `http://127.0.0.1:8888/lab` (no token required — development configuration).
+Open Jupyter Lab at `http://127.0.0.1:8888/lab` (no token required - development configuration).
 
 ## How It Works
 
@@ -55,29 +55,29 @@ Both solver notebooks share the same pipeline:
 4. Run **1 iteration** of Grover's algorithm (optimal for N=8 states, multiple solutions)
 5. Measure, verify each clause, and plot the histogram
 
-**`3sat.ipynb`** runs step 4 on the local Aer simulator — fast, noise-free, no extra credentials.
+**`3sat.ipynb`** runs step 4 on the local Aer simulator - fast, noise-free, no extra credentials.
 
 **`3sat-ibm.ipynb`** transpiles the circuit to a real IBM Quantum device's native gate set and submits it via `SamplerV2`. The IBM Quantum API key is prompted securely at runtime (masked input, never stored). A Job ID and tracking URL are printed so results can be retrieved if the session disconnects.
 
 ## Prerequisites
 
-| Requirement | Details |
-|---|---|
-| Docker | For the containerised workflow |
-| IBM i system | With Mapepire installed and running (`sc start mapepire`) |
-| IBM i credentials | Hostname, username, password, port (default 8076) |
-| IBM Quantum account | Required for `3sat-ibm.ipynb` only — free account at [quantum.cloud.ibm.com](https://quantum.cloud.ibm.com) |
+| Requirement         | Details                                                                                                      |
+| ------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Docker              | For the containerised workflow                                                                               |
+| IBM i system        | With Mapepire installed and running (`sc start mapepire`)                                                  |
+| IBM i credentials   | Hostname, username, password, port (default 8076)                                                            |
+| IBM Quantum account | Required for`3sat-ibm.ipynb` only - free account at [quantum.cloud.ibm.com](https://quantum.cloud.ibm.com) |
 
 ## Technologies
 
-| Layer | Package |
-|---|---|
-| Quantum (simulator) | `qiskit`, `qiskit-aer` |
-| Quantum (cloud) | `qiskit-ibm-runtime` |
-| IBM i connectivity | `mapepire-python`, `gssapi` |
-| Notebooks | `jupyterlab`, `ipykernel` |
-| Visualisation | `matplotlib` |
-| Container base | `python:3.11-slim` + `libkrb5-dev` |
+| Layer               | Package                                |
+| ------------------- | -------------------------------------- |
+| Quantum (simulator) | `qiskit`, `qiskit-aer`             |
+| Quantum (cloud)     | `qiskit-ibm-runtime`                 |
+| IBM i connectivity  | `mapepire-python`, `gssapi`        |
+| Notebooks           | `jupyterlab`, `ipykernel`          |
+| Visualisation       | `matplotlib`                         |
+| Container base      | `python:3.11-slim` + `libkrb5-dev` |
 
 See [`3sat-emulator/README.md`](3sat-emulator/README.md) for full notebook documentation including IBM Quantum API key setup, Mapepire startup, and backend selection.
 
@@ -87,4 +87,4 @@ Based on Jack Woehr's COMMON 2021 presentation on Quantum Computing with IBM i.
 
 ## License
 
-Apache License 2.0 — see [`LICENSE`](LICENSE).
+Apache License 2.0 - see [`LICENSE`](LICENSE).
