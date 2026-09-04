@@ -10,64 +10,21 @@ This repository provides a containerized Jupyter Lab environment for quantum com
 
 ```
 Quantum-IBMi-Docker/
-├── 3sat-emulator/                    # Quantum 3SAT solver with IBM i integration
-│   ├── Dockerfile                    # Jupyter Lab container configuration
-│   ├── 3sat.ipynb                    # Main quantum 3SAT solver notebook
-│   ├── dbsetup.ipynb                 # Database setup and connection testing notebook
-│   ├── jupyter_server_config.py      # Jupyter server configuration
-│   ├── requirements.txt              # Python dependencies
-│   ├── odbc.ini                      # ODBC configuration (optional)
-│   ├── .dockerignore                 # Docker ignore patterns
-│   └── README.md                     # 3SAT emulator documentation
-├── .gitignore                        # Git ignore patterns
-├── LICENSE                           # Apache 2.0 License
-└── README.md                         # This file
+├── 3sat-emulator/
+│   ├── 3sat.ipynb                 # Quantum 3SAT solver — local Aer simulator
+│   ├── 3sat-ibm.ipynb             # Quantum 3SAT solver — IBM Quantum Cloud
+│   ├── dbsetup.ipynb              # IBM i database setup (run once)
+│   ├── Dockerfile                 # Container image definition
+│   ├── requirements.txt           # Python dependencies
+│   ├── jupyter_server_config.py   # Jupyter server configuration
+│   ├── odbc.ini                   # ODBC configuration (optional)
+│   └── README.md                  # Detailed notebook documentation
+├── .gitignore
+├── LICENSE                        # Apache 2.0
+└── README.md                      # This file
 ```
 
-## Features
-
-- **Interactive Jupyter Notebooks**: User-friendly interface for quantum computing experimentation
-- **Quantum 3SAT Solver**: Implementation of Grover's algorithm to solve Boolean satisfiability problems
-- **IBM i Integration**: Direct connectivity to IBM i databases using Mapepire Python library
-- **Database Setup Tools**: Automated notebook for schema creation and data insertion
-- **Containerized Deployment**: Docker-based Jupyter Lab for consistent execution environments
-- **Qiskit Framework**: Built on IBM's latest Qiskit quantum computing framework (≥1.0.0)
-- **Aer Simulator**: Local quantum circuit simulation using Qiskit Aer
-- **Visualization**: Interactive plotting of quantum measurement results
-
-## Technologies
-
-- **Quantum Computing**: Qiskit (≥1.0.0), Qiskit Aer (≥0.13.0)
-- **IBM i Connectivity**: Mapepire Python (≥0.1.0)
-- **Interactive Environment**: JupyterLab (≥4.0.0), IPython Kernel (≥6.25.0)
-- **Visualization**: Matplotlib (≥3.7.0)
-- **Python**: 3.11+
-- **Container**: Docker
-
-## Dependencies
-
-```
-qiskit>=1.0.0
-qiskit-aer>=0.13.0
-mapepire-python>=0.1.0
-python-dotenv>=1.0.0
-numpy>=1.24.0
-jupyterlab>=4.0.0
-ipykernel>=6.25.0
-matplotlib>=3.7.0
-```
-
-## Getting Started
-
-### Prerequisites
-
-- Docker installed on your system
-- Access to an IBM i system with Mapepire configured
-- IBM i credentials (hostname, username, password, port)
-
-### Quick Start
-
-Build and run the Jupyter Lab container:
+## Quick Start
 
 ```bash
 cd 3sat-emulator
@@ -75,116 +32,59 @@ docker build -t quantum-3sat-jupyter .
 docker run -p 8888:8888 quantum-3sat-jupyter
 ```
 
-Access Jupyter Lab at `http://127.0.0.1:8888/lab` (no token required - configured for development use).
-
-### Using the Notebooks
-
-1. **Database Setup** ([`dbsetup.ipynb`](3sat-emulator/dbsetup.ipynb)):
-   - Connect to IBM i via Mapepire
-   - Set current schema to `JESSEG`
-   - Create the `JESSEG` schema
-   - Create the `THREESAT()` function with embedded sample data
-   - Verify the function returns correct data
-
-2. **Quantum 3SAT Solver** ([`3sat.ipynb`](3sat-emulator/3sat.ipynb)):
-   - Connect to IBM i database
-   - Fetch 3SAT problem instances
-   - Build quantum oracle from CNF clauses
-   - Execute Grover's algorithm
-   - Measure and visualize results
-   - Verify satisfying assignments
-
-### Local Installation (Without Docker)
-
-If you prefer to run locally without Docker:
-
-```bash
-cd 3sat-emulator
-pip install -r requirements.txt
-jupyter lab
-```
+Open Jupyter Lab at `http://127.0.0.1:8888/lab` (no token required — development configuration).
 
 ## How It Works
 
-### Grover's Algorithm for 3SAT
+### 1. Database setup (once)
 
-The 3SAT solver uses Grover's quantum search algorithm to find satisfying assignments for Boolean formulas in Conjunctive Normal Form (CNF):
+Run `dbsetup.ipynb` to create the `JESSEG.THREESAT()` table function on IBM i:
 
-1. **Database Connection**: Connects to IBM i via Mapepire to retrieve 3SAT problem instances
-2. **Quantum Oracle Construction**: Builds a quantum oracle that marks satisfying assignments
-3. **Grover Iteration**: Applies amplitude amplification to increase probability of measuring correct solutions
-4. **Measurement**: Simulates quantum circuit execution using Qiskit Aer
-5. **Verification**: Validates results against the original CNF formula
-
-### Database Schema
-
-The IBM i database uses the `THREESAT()` function that returns 3SAT clauses. This function is created automatically by running [`dbsetup.ipynb`](3sat-emulator/dbsetup.ipynb):
-
-```sql
-CREATE OR REPLACE FUNCTION JESSEG.THREESAT()
-  RETURNS TABLE (c1 INT, c2 INT, c3 INT, c4 INT)
-  LANGUAGE SQL
-  SPECIFIC JESSEG.THREESAT
-  NOT DETERMINISTIC
-  NO EXTERNAL ACTION
-  RETURN
-    VALUES (-1, -2, -3, 0),
-           ( 1, -2,  3, 0),
-           ( 1,  2, -3, 0),
-           ( 1, -2, -3, 0),
-           (-1,  2,  3, 0);
-```
-
-**Format**: Each row represents a clause with three literals (c1, c2, c3). Negative values represent negated variables. The fourth column (c4) is reserved for future use.
-
-**Usage**: Query the function using:
 ```sql
 SELECT * FROM TABLE(JESSEG.THREESAT()) AS t
+-- Returns 5 clauses: (-1,-2,-3), (1,-2,3), (1,2,-3), (1,-2,-3), (-1,2,3)
 ```
 
-## Use Cases
+### 2. Solve with Grover's algorithm
 
-- **Quantum Algorithm Education**: Learn quantum computing with practical, interactive examples
-- **IBM i Modernization**: Demonstrate quantum computing integration with legacy systems
-- **Research & Development**: Explore quantum-classical hybrid architectures
-- **Proof of Concept**: Validate quantum solutions for combinatorial optimization problems
-- **Interactive Experimentation**: Modify and test quantum algorithms in real-time
+Both solver notebooks share the same pipeline:
 
-## Configuration
+1. Connect to IBM i via Mapepire and fetch the 3SAT instance
+2. Convert DIMACS CNF clauses to a boolean expression
+3. Build a `PhaseOracleGate` oracle from that expression
+4. Run **1 iteration** of Grover's algorithm (optimal for N=8 states, multiple solutions)
+5. Measure, verify each clause, and plot the histogram
 
-### Jupyter Server Configuration
+**`3sat.ipynb`** runs step 4 on the local Aer simulator — fast, noise-free, no extra credentials.
 
-The [`jupyter_server_config.py`](3sat-emulator/jupyter_server_config.py) file disables authentication for development:
+**`3sat-ibm.ipynb`** transpiles the circuit to a real IBM Quantum device's native gate set and submits it via `SamplerV2`. The IBM Quantum API key is prompted securely at runtime (masked input, never stored). A Job ID and tracking URL are printed so results can be retrieved if the session disconnects.
 
-```python
-c.ServerApp.token = ''
-c.ServerApp.password = ''
-c.IdentityProvider.token = ''
-```
+## Prerequisites
 
-**⚠️ Security Note**: This configuration is for development/demonstration purposes. For production use, enable proper authentication.
+| Requirement | Details |
+|---|---|
+| Docker | For the containerised workflow |
+| IBM i system | With Mapepire installed and running (`sc start mapepire`) |
+| IBM i credentials | Hostname, username, password, port (default 8076) |
+| IBM Quantum account | Required for `3sat-ibm.ipynb` only — free account at [quantum.cloud.ibm.com](https://quantum.cloud.ibm.com) |
 
-### Docker Configuration
+## Technologies
 
-- **Exposed Port**: 8888 (Jupyter Lab)
-- **Base Image**: `python:3.11-slim`
-- **Non-root User**: Runs as user `quantum` (UID 1000)
-- **Working Directory**: `/app`
+| Layer | Package |
+|---|---|
+| Quantum (simulator) | `qiskit`, `qiskit-aer` |
+| Quantum (cloud) | `qiskit-ibm-runtime` |
+| IBM i connectivity | `mapepire-python`, `gssapi` |
+| Notebooks | `jupyterlab`, `ipykernel` |
+| Visualisation | `matplotlib` |
+| Container base | `python:3.11-slim` + `libkrb5-dev` |
 
-## Acknowledgments
+See [`3sat-emulator/README.md`](3sat-emulator/README.md) for full notebook documentation including IBM Quantum API key setup, Mapepire startup, and backend selection.
 
-**Based on:** Jack Woehr's COMMON 2021 Presentation on Quantum Computing with IBM i
+## Acknowledgements
+
+Based on Jack Woehr's COMMON 2021 presentation on Quantum Computing with IBM i.
 
 ## License
 
-This project is licensed under the Apache License 2.0 - see the [`LICENSE`](LICENSE) file for details.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit issues or pull requests.
-
-## Support
-
-For questions or issues:
-- Open an issue in this repository
-- Consult the [3SAT Emulator README](3sat-emulator/README.md) for detailed notebook documentation
+Apache License 2.0 — see [`LICENSE`](LICENSE).
