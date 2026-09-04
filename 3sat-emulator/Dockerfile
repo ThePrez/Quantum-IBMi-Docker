@@ -9,9 +9,9 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
 # System dependencies:
-#   gcc            — required to build several Python extension packages
-#   libkrb5-dev    — Kerberos headers needed to compile the gssapi Python package
-#   libgssapi-krb5-2 — Kerberos runtime library required by gssapi at import time
+#   gcc            - required to build several Python extension packages
+#   libkrb5-dev    - Kerberos headers needed to compile the gssapi Python package
+#   libgssapi-krb5-2 - Kerberos runtime library required by gssapi at import time
 #   (gssapi is a transitive dependency of mapepire-python on Linux)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
