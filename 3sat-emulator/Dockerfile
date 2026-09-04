@@ -1,44 +1,41 @@
-# Use Python 3.11 slim image as base
+# Base image: Python 3.11 slim
 FROM python:3.11-slim
 
-# Set working directory
 WORKDIR /app
 
-# Set environment variables
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
-# Install system dependencies
+# System dependencies:
+#   gcc            — required to build several Python extension packages
+#   libkrb5-dev    — Kerberos headers needed to compile the gssapi Python package
+#   libgssapi-krb5-2 — Kerberos runtime library required by gssapi at import time
+#   (gssapi is a transitive dependency of mapepire-python on Linux)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     gcc \
+    libkrb5-dev \
+    libgssapi-krb5-2 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements file
 COPY requirements.txt .
-
-# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy Jupyter notebooks and supporting files
+# Copy notebooks and supporting files
 COPY *.ipynb .
 
-# Create non-root user for security
+# Run as non-root user for security
 RUN useradd -m -u 1000 quantum && \
     chown -R quantum:quantum /app && \
     mkdir -p /home/quantum/.jupyter
 
-# Copy Jupyter config
 COPY jupyter_server_config.py /home/quantum/.jupyter/
 RUN chown -R quantum:quantum /home/quantum/.jupyter
 
-# Switch to non-root user
 USER quantum
 
-# Expose Jupyter port
 EXPOSE 8888
 
-# Set entrypoint to start Jupyter Lab
-ENTRYPOINT ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
+ENTRYPOINT ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser"]
