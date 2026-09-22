@@ -1,6 +1,6 @@
 # QAOA Batch Job Scheduler - Jupyter Notebooks
 
-Jupyter notebooks for optimising IBM i batch job scheduling using the **Quantum Approximate Optimisation Algorithm (QAOA)**. Job data is fetched from an IBM i database via Mapepire, the scheduling problem is encoded as a QUBO and solved with QAOA, and the optimised schedule is written back to IBM i. Runs either on the local Aer simulator or on real IBM Quantum hardware.
+Jupyter notebooks for optimizing IBM i batch job scheduling using the **Quantum Approximate Optimization Algorithm (QAOA)**. Job data is fetched from an IBM i database via Mapepire, the scheduling problem is encoded as a Quadratic Unconstrained Binary Optimization (QUBO) and solved with QAOA, and the optimised schedule is written back to IBM i. Runs either on the local Aer simulator or on real IBM Quantum hardware.
 
 ---
 
@@ -8,30 +8,29 @@ Jupyter notebooks for optimising IBM i batch job scheduling using the **Quantum 
 
 | Notebook | Purpose |
 |---|---|
-| `dbsetup.ipynb` | One-time IBM i database setup — creates `QSCHEDULE.JOBQUEUE()` and `QSCHEDULE.SCHEDULE_RESULTS` |
-| `qaoa_scheduler.ipynb` | QAOA batch job scheduler using the **local Aer simulator** |
-| `qaoa_scheduler_ibm.ipynb` | QAOA batch job scheduler running on a real **IBM Quantum device** |
+| `dbsetup.ipynb` | One-time IBM i database setup - creates `QSCHEDULE.JOBQUEUE()` and `QSCHEDULE.SCHEDULE_RESULTS` |
+| `qaoa_scheduler.ipynb` | QAOA batch job scheduler using the **- local Aer simulator** |
+| `qaoa_scheduler_ibm.ipynb` | QAOA batch job scheduler running on a real **- IBM Quantum device** |
 
 ### `dbsetup.ipynb`
 - Prompts for IBM i connection details
 - Creates the `QSCHEDULE` schema, `JOBQUEUE()` table function (8 pre-loaded IBM i batch jobs), and `SCHEDULE_RESULTS` results table
 - Verifies both objects exist and return data
 
-### `qaoa_scheduler.ipynb` — Local Simulator
+### `qaoa_scheduler.ipynb` - Local Simulator
 - Connects to IBM i via Mapepire and fetches the job queue from `QSCHEDULE.JOBQUEUE()`
 - Builds a QUBO cost matrix encoding one-hot, priority, dependency, and memory constraints
 - Converts the QUBO to an Ising Hamiltonian as a `SparsePauliOp`
-- Builds a parameterised QAOA circuit (`p=1` layers)
-- Optimises circuit parameters with COBYLA on the local Aer simulator
+- Builds a parameterized QAOA circuit
+- Optimizes circuit parameters with COBYLA on the local Aer simulator
 - Decodes the best bitstring into a slot-based job schedule
 - Validates dependency constraints and writes the result to `QSCHEDULE.SCHEDULE_RESULTS`
-- Visualises results with a measurement histogram and a Gantt-style schedule chart
+- Visualizes results with a measurement histogram and a Gantt-style schedule chart
 
-### `qaoa_scheduler_ibm.ipynb` — IBM Quantum Cloud
+### `qaoa_scheduler_ibm.ipynb` - IBM Quantum Cloud
 - Same workflow as `qaoa_scheduler.ipynb` but submits circuits to a real IBM Quantum device
-- Prompts for the IBM Quantum API key at runtime (masked input — never stored in notebook)
-- Uses `SamplerV2` + `generate_preset_pass_manager` (optimisation level 3) for ISA transpilation
-- Opens a `Session` for the duration of the COBYLA optimisation loop to reduce queuing overhead
+- Prompts for the IBM Quantum API key at runtime (masked input - never stored in notebook)
+- Uses `SamplerV2` + `generate_preset_pass_manager` (optimization level 3) for ISA transpilation
 - Prints the Job ID and a tracking URL for the final sampling job
 
 ---
@@ -46,7 +45,7 @@ docker build -t quantum-qaoa-scheduler .
 docker run -p 8888:8888 quantum-qaoa-scheduler
 ```
 
-Open Jupyter Lab at `http://127.0.0.1:8888/lab` (no token required — configured for development).
+Open Jupyter Lab at `http://127.0.0.1:8888/lab` (no token required - configured for development).
 
 ### Option 2: Local Installation
 
@@ -61,14 +60,14 @@ jupyter lab
 
 ### Local simulator
 
-1. Run `dbsetup.ipynb` — sets up the IBM i database (one time only)
-2. Run `qaoa_scheduler.ipynb` — solves the scheduling problem on the local simulator
+1. Run `dbsetup.ipynb` - sets up the IBM i database (one time only)
+2. Run `qaoa_scheduler.ipynb` - solves the scheduling problem on the local simulator
 
 ### IBM Quantum Cloud
 
-1. Run `dbsetup.ipynb` — sets up the IBM i database (one time only)
+1. Run `dbsetup.ipynb` - sets up the IBM i database (one time only)
 2. Obtain your IBM Quantum API key (see [IBM Quantum API Key](#ibm-quantum-api-key) below)
-3. Run `qaoa_scheduler_ibm.ipynb` — submits circuits to real quantum hardware
+3. Run `qaoa_scheduler_ibm.ipynb` - submits circuits to real quantum hardware
 
 ---
 
@@ -78,10 +77,10 @@ The scheduler optimises the placement of **8 IBM i batch jobs** into **4 time sl
 
 | Job | Duration (min) | Priority | Memory (MB) | Depends On |
 |---|---|---|---|---|
-| PAYROLL | 45 | 1 | 512 | — |
-| INVUPD | 30 | 2 | 256 | — |
+| PAYROLL | 45 | 1 | 512 | - |
+| INVUPD | 30 | 2 | 256 | - |
 | GLCLOSE | 60 | 1 | 768 | PAYROLL |
-| ARAGING | 20 | 3 | 128 | — |
+| ARAGING | 20 | 3 | 128 | - |
 | SALESRPT | 25 | 2 | 192 | INVUPD |
 | BACKUPDB | 90 | 1 | 1024 | GLCLOSE |
 | TAXCALC | 35 | 1 | 384 | PAYROLL |
@@ -117,7 +116,7 @@ The input is masked like a password and is **never written to disk or stored in 
 1. Go to [quantum.cloud.ibm.com](https://quantum.cloud.ibm.com) and sign in (or create a free IBMid account)
 2. Click your **account name / avatar** → **Manage account**, or go directly to [quantum.cloud.ibm.com/account](https://quantum.cloud.ibm.com/account)
 3. Under **API keys**, click **Create +** or **View** next to an existing key
-4. Copy the key — keep it private, never commit it to a repository
+4. Copy the key - keep it private, never commit it to a repository
 
 > Free accounts include access to real quantum backends at no charge.
 
@@ -154,7 +153,7 @@ backend = service.least_busy(simulator=False, operational=True)
 To target a specific device:
 
 ```python
-backend = service.backend("ibm_brisbane")
+backend = service.backend("ibm_xyz..")
 ```
 
 To use the cloud simulator instead of real hardware:
@@ -192,9 +191,9 @@ counts = result[0].data.c.get_counts()
 
 ---
 
-## Mapepire — IBM i Connectivity
+## Mapepire - IBM i Connectivity
 
-Both solver notebooks connect to IBM i using [Mapepire](https://github.com/Mapepire-IBMi). The Mapepire server must be running on the IBM i before you connect.
+Both solver notebooks connect to IBM i using [Mapepire]. The Mapepire server must be running on the IBM i before you connect.
 
 ### Starting Mapepire (on IBM i)
 
@@ -224,11 +223,10 @@ Enter port (default 8076): <press Enter for default>
 
 | File | Description |
 |---|---|
-| `qaoa_scheduler.ipynb` | QAOA batch job scheduler — local Aer simulator |
-| `qaoa_scheduler_ibm.ipynb` | QAOA batch job scheduler — IBM Quantum Cloud |
+| `qaoa_scheduler.ipynb` | QAOA batch job scheduler - local Aer simulator |
+| `qaoa_scheduler_ibm.ipynb` | QAOA batch job scheduler - IBM Quantum Cloud |
 | `dbsetup.ipynb` | IBM i database setup (run once) |
 | `Dockerfile` | Container image definition |
 | `requirements.txt` | Python dependencies (managed by container build) |
 | `jupyter_server_config.py` | Jupyter server configuration |
-| `odbc.ini` | ODBC configuration (optional) |
 | `.dockerignore` | Docker build exclusions |

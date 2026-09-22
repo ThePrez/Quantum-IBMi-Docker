@@ -4,7 +4,7 @@ Docker-based Jupyter Lab environment integrating quantum computing with IBM i sy
 
 ## Overview
 
-This repository provides containerised Jupyter Lab environments for quantum computing solutions that interact with IBM i systems through the Mapepire Python library. Modules implement quantum algorithms from the iQuantum ideas catalogue, covering combinatorial optimisation and satisfiability problems with data stored in IBM i databases.
+This repository provides containerized Jupyter Lab environments for quantum computing solutions that interact with IBM i systems through the Mapepire Python library. Modules implement quantum algorithms covering combinatorial Optimization and satisfiability problems with data stored in IBM i databases.
 
 ## Project Structure
 
@@ -26,7 +26,6 @@ Quantum-IBMi-Docker/
 │   ├── Dockerfile                      # Container image definition
 │   ├── requirements.txt                # Python dependencies
 │   ├── jupyter_server_config.py        # Jupyter server configuration
-│   ├── odbc.ini                        # ODBC configuration (optional)
 │   └── README.md                       # Detailed notebook documentation
 ├── .gitignore
 ├── LICENSE                             # Apache 2.0
@@ -35,7 +34,7 @@ Quantum-IBMi-Docker/
 
 ## Modules
 
-### `3sat-emulator/` — Quantum 3SAT Solver
+### `3sat-emulator/` - Quantum 3SAT Solver
 
 Solves a 3SAT Boolean satisfiability problem using **Grover's algorithm**. The CNF clause data is stored in an IBM i database and fetched via Mapepire. Results are verified clause-by-clause and visualised as a measurement histogram.
 
@@ -49,9 +48,9 @@ See [`3sat-emulator/README.md`](3sat-emulator/README.md) for full documentation.
 
 ---
 
-### `qaoa-scheduler/` — QAOA Batch Job Scheduler
+### `qaoa-scheduler/` - QAOA Batch Job Scheduler
 
-Optimises the scheduling of **8 IBM i batch jobs** across 4 time slots using the **Quantum Approximate Optimisation Algorithm (QAOA)**. The job queue (with priority, duration, memory, and dependency attributes) is stored in IBM i and fetched via Mapepire. The scheduling problem is encoded as a QUBO, converted to an Ising Hamiltonian, and solved with COBYLA-optimised QAOA. The resulting schedule is written back to IBM i.
+Optimizes the scheduling of **8 IBM i batch jobs** across 4 time slots using the **Quantum Approximate Optimization Algorithm (QAOA)**. The job queue (with priority, duration, memory, and dependency attributes) is stored in IBM i and fetched via Mapepire. The scheduling problem is encoded as a Quadratic Unconstrained Binary Optimization (QUBO), converted to an Ising Hamiltonian, and solved with COBYLA-optimised QAOA. The resulting schedule is written back to IBM i.
 
 ```bash
 cd qaoa-scheduler
@@ -67,10 +66,10 @@ See [`qaoa-scheduler/README.md`](qaoa-scheduler/README.md) for full documentatio
 
 | Requirement | Details |
 |---|---|
-| Docker | For the containerised workflow |
+| Docker | For the containerized workflow |
 | IBM i system | With Mapepire installed and running (`sc start mapepire`) |
 | IBM i credentials | Hostname, username, password, port (default 8076) |
-| IBM Quantum account | Required for IBM Cloud notebooks only — free account at [quantum.cloud.ibm.com](https://quantum.cloud.ibm.com) |
+| IBM Quantum account | Required for IBM Cloud notebooks only - free account at [quantum.cloud.ibm.com](https://quantum.cloud.ibm.com) |
 
 ## Technologies
 
@@ -85,8 +84,8 @@ See [`qaoa-scheduler/README.md`](qaoa-scheduler/README.md) for full documentatio
 
 ## Acknowledgements
 
-Based on Jack Woehr's COMMON 2021 presentation on Quantum Computing with IBM i, and the iQuantum ideas catalogue for practical quantum + IBM i applications.
+Based on Jack Woehr's COMMON 2021 presentation on Quantum Computing with IBM i, and the few practical Quantum on IBM i ideas.
 
 ## License
 
-Apache License 2.0 — see [`LICENSE`](LICENSE).
+Apache License 2.0 - see [`LICENSE`](LICENSE).
